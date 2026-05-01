@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль — МурррОтель</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .lock-badge {
+            font-size: 4rem;
+            filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.2));
+        }
+        .profile-card {
+            background: white;
+            border-radius: 32px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+        .profile-card:hover {
+            transform: translateY(-5px);
+        }
+        .info-row {
+            display: flex;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #ffe0b5;
+        }
+        .info-label {
+            width: 140px;
+            font-weight: bold;
+            color: #8b7355;
+        }
+        .info-value {
+            flex: 1;
+            color: #2c1810;
+        }
+        .role-badge {
+            display: inline-block;
+            background: #ffb347;
+            color: #2c1810;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .edit-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ffe0b5;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+        }
+        .booking-item, .review-item {
+            background: #fef7e8;
+            border-radius: 20px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ffe0b5;
+        }
+        .btn-icon {
+            background: #2c1810;
+            color: #ffb347;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            transition: 0.3s;
+        }
+        .btn-icon:hover {
+            background: #ffb347;
+            color: #2c1810;
+        }
+        .btn-danger {
+            background: #c0392b;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #a93226;
+            color: white;
+        }
+        .admin-panel, .manager-panel {
+            background: linear-gradient(135deg, #fff5e6, #ffe0b5);
+            border-radius: 32px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        .unauthorized-card {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 32px;
+            max-width: 500px;
+            margin: 2rem auto;
+        }
+        .unauthorized-card .lock-badge {
+            font-size: 5rem;
+        }
+        
+        /* Стили для печати договора и чека */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-document, .print-document * {
+                visibility: visible;
+            }
+            .print-document {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                padding: 20px;
+                background: white;
+                z-index: 9999;
+            }
+            .no-print {
+                display: none !important;
+            }
+            button, .btn-icon, .auth-buttons, header, footer, .burger, .nav-menu {
+                display: none !important;
+            }
+        }
+        
+        /* Официальный договор */
+        .booking-document {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            font-family: 'Times New Roman', 'Georgia', serif;
+            line-height: 1.5;
+            color: #000;
+            border: 1px solid #2c1810;
+            padding: 2rem;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .document-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #2c1810;
+            padding-bottom: 1rem;
+        }
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c1810;
+        }
+        .document-header p {
+            margin: 0.2rem 0;
+            font-size: 0.9rem;
+        }
+        .document-number {
+            text-align: right;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+        .contract-title {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin: 1.5rem 0;
+            text-transform: uppercase;
+        }
+        .document-section {
+            margin: 1.2rem 0;
+        }
+        .document-section h3 {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 0 0 0.8rem 0;
+            border-left: 4px solid #2c1810;
+            padding-left: 10px;
+        }
+        .info-row {
+            display: flex;
+            margin-bottom: 0.5rem;
+        }
+        .info-label {
+            width: 180px;
+            font-weight: bold;
+        }
+        .info-value {
+            flex: 1;
+        }
+        .preferences-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .preference-tag {
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .signature-block {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #000;
+        }
+        .signature-item {
+            text-align: center;
+            width: 45%;
+        }
+        .signature-line {
+            border-top: 1px solid #000;
+            width: 80%;
+            margin: 2rem auto 0.3rem;
+        }
+        .stamp {
+            text-align: right;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            font-family: monospace;
+        }
+        .document-footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            border-top: 1px solid #ccc;
+            padding-top: 1rem;
+        }
+        
+        /* Стили для чека */
+        .receipt-document {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            font-family: monospace;
+            padding: 20px;
+            border: 1px dashed #2c1810;
+        }
+        .receipt-header {
+            text-align: center;
+            border-bottom: 1px dashed #2c1810;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .receipt-header h3 {
+            margin: 0;
+        }
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+        }
+        .receipt-total {
+            font-weight: bold;
+            border-top: 1px dashed #2c1810;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        .receipt-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="no-print">
+        <div class="header-container">
+            <a href="index.html" class="logo">🐾 Муррр<span>Отель</span></a>
+            <div class="burger"><div></div><div></div><div></div></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="rooms.html">Номера</a></li>
+                <li><a href="booking.html">Бронирование</a></li>
+                <li><a href="reviews.html">Отзывы</a></li>
+                <li><a href="profile.html">Профиль</a></li>
+            </ul>
+            <div class="auth-buttons" id="authContainer"></div>
+        </div>
+    </header>
+
+    <main class="profile-container no-print">
+        <div class="profile-header">
+            <div class="lock-badge">🔐</div>
+            <h1>👤 Личный кабинет</h1>
+        </div>
+        
+        <!-- Неавторизованный блок -->
+        <div id="unauthorizedMessage" class="unauthorized-card" style="display: none;">
+            <div class="lock-badge">🔒</div>
+            <p style="font-size: 1.3rem; margin: 1rem 0;">Доступ защищён</p>
+            <p>Пожалуйста, войдите или зарегистрируйтесь</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+                <button onclick="openAuthModal('login')" class="btn-primary">🚪 Войти</button>
+                <button onclick="openAuthModal('register')" class="btn-primary" style="background: #8b7355;">📝 Регистрация</button>
+            </div>
+        </div>
+        
+        <!-- Авторизованный блок -->
+        <div id="profileContent" style="display: none;">
+            <!-- Данные профиля -->
+            <div class="profile-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                    <h2>🐱 Мои данные</h2>
+                    <span class="role-badge" id="userRoleBadge"></span>
+                </div>
+                <div id="userInfo">
+                    <div class="info-row"><div class="info-label">📛 Имя:</div><div class="info-value" id="userName"></div></div>
+                    <div class="info-row"><div class="info-label">📧 Email:</div><div class="info-value" id="userEmail"></div></div>
+                    <div class="info-row"><div class="info-label">📞 Телефон:</div><div class="info-value" id="userPhone"></div></div>
+                    <div class="info-row"><div class="info-label">📅 Регистрация:</div><div class="info-value" id="userRegDate"></div></div>
+                </div>
+                <div id="editForm" style="display: none; margin-top: 1rem;">
+                    <input type="text" id="editName" placeholder="Имя" class="edit-input">
+                    <input type="tel" id="editPhone" placeholder="Телефон" class="edit-input">
+                    <button onclick="saveProfileChanges()" class="btn-icon">💾 Сохранить</button>
+                    <button onclick="cancelEdit()" class="btn-icon">❌ Отмена</button>
+                </div>
+                <button id="editProfileBtn" onclick="enableEdit()" class="btn-icon" style="margin-top: 1rem;">✏️ Редактировать профиль</button>
+            </div>
+            
+            <!-- Мои бронирования -->
+            <div class="profile-card">
+                <div class="section-title"><span>📅</span><h2>Мои бронирования</h2></div>
+                <div id="myBookingsList"></div>
+            </div>
+            
+            <!-- Панель администратора -->
+            <div id="adminPanel" class="admin-panel" style="display: none;">
+                <div class="section-title"><span>👑</span><h2>Управление сайтом (Администратор)</h2></div>
+                <h3>📋 Все бронирования</h3>
+                <div id="allBookingsList"></div>
+                <h3>⭐ Все отзывы</h3>
+                <div id="allReviewsList"></div>
+            </div>
+            
+            <!-- Панель менеджера -->
+            <div id="managerPanel" class="manager-panel" style="display: none;">
+                <div class="section-title"><span>📋</span><h2>Панель менеджера</h2></div>
+                <h3>📋 Все бронирования</h3>
+                <div id="managerBookingsList"></div>
+                <h3>⭐ Все отзывы</h3>
+                <div id="managerReviewsList"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="no-print">
+        <div class="footer-container">
+            <div><h4>🐾 МурррОтель</h4><p>Отель для кошек с любовью</p></div>
+            <div><h4>Контакты</h4><p>📞 +7 (999) 123-45-67</p><p>✉️ hello@murr-hotel.ru</p></div>
+            <div><h4>Адрес</h4><p>📍 Республика Калмыкия,<br>г. Элиста, ул. Кошачья, д. 15</p></div>
+            <div><h4>Режим работы</h4><p>Круглосуточно</p></div>
+        </div>
+        <div class="copyright">© 2026 МурррОтель. Все права защищены.</div>
+    </footer>
+
+    <div id="authModal" class="modal no-print">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+            <h2 id="modalTitle">Вход</h2>
+            <div id="modalLoginForm">
+                <div class="form-group"><input type="email" id="modalLoginEmail" placeholder="Email"></div>
+                <div class="form-group"><input type="password" id="modalLoginPassword" placeholder="Пароль"></div>
+                <button class="btn-primary" onclick="doModalLogin()">Войти</button>
+                <p style="margin-top:1rem;">Нет аккаунта? <a href="#" onclick="openAuthModal('register')">Регистрация</a></p>
+            </div>
+            <div id="modalRegisterForm" style="display:none;">
+                <div class="form-group"><input type="text" id="modalRegName" placeholder="Ваше имя"></div>
+                <div class="form-group"><input type="email" id="modalRegEmail" placeholder="Email"></div>
+                <div class="form-group"><input type="tel" id="modalRegPhone" placeholder="Телефон"></div>
+                <div class="form-group"><input type="password" id="modalRegPassword" placeholder="Пароль"></div>
+                <button class="btn-primary" onclick="doModalRegister()">Зарегистрироваться</button>
+                <p style="margin-top:1rem;"><a href="#" onclick="openAuthModal('login')">Уже есть аккаунт? Войти</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="printContainer" class="print-document" style="display: none;"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // ============ ОФИЦИАЛЬНЫЙ ДОГОВОР С ПЕЧАТЬЮ ============
+        function generateContract(booking, user) {
+            const nights = Math.ceil((new Date(booking.checkOut) - new Date(booking.checkIn)) / (1000 * 60 * 60 * 24));
+            const bookingNumber = 'MR-' + new Date(booking.createdAt).getFullYear() + '-' + String(booking.id).padStart(6, '0');
+            const currentDate = new Date().toLocaleDateString('ru-RU');
+            
+            let foodHtml = '';
+            if (booking.foodPreferences && booking.foodPreferences.length > 0) {
+                foodHtml = booking.foodPreferences.map(food => `<span class="preference-tag">${food}</span>`).join('');
+            } else {
+                foodHtml = '<span class="preference-tag">Стандартный корм (Royal Canin)</span>';
+            }
+            
+            let litterHtml = '';
+            if (booking.litterPreferences && booking.litterPreferences.length > 0) {
+                litterHtml = booking.litterPreferences.map(litter => `<span class="preference-tag">${litter}</span>`).join('');
+            } else {
+                litterHtml = '<span class="preference-tag">Стандартный наполнитель (древесный)</span>';
+            }
+            
+            return `
+                <div class="booking-document">
+                    <div class="document-header">
+                        <div class="logo-text">🐾 МурррОтель</div>
+                        <p>Общество с ограниченной ответственностью «МурррОтель»</p>
+                        <p>ОГРН 1237700012345, ИНН 7701234567, КПП 770101001</p>
+                        <p>Юридический адрес: 358000, Республика Калмыкия, г. Элиста, ул. Кошачья, д. 15</p>
+                        <p>Лицензия на осуществление ветеринарной деятельности № ЛО-77-01-123456 от 15.03.2023</p>
+                    </div>
+                    
+                    <div class="document-number">
+                        <strong>ДОГОВОР № ${bookingNumber}</strong><br>
+                        г. Элиста &nbsp;&nbsp;&nbsp; «${currentDate}»
+                    </div>
+                    
+                    <div class="contract-title">
+                        ДОГОВОР НА ОКАЗАНИЕ УСЛУГ ПО ПРОЖИВАНИЮ ЖИВОТНОГО
+                    </div>
+                    
+                    <div class="document-section">
+                        <h3>1. СТОРОНЫ ДОГОВОРА</h3>
+                        <div class="info-row"><div class="info-label">Исполнитель:</div><div class="info-value">ООО «МурррОтель», в лице генерального директора Мурзикова К.С., действующего на основании Устава.</div></div>
+                        <div class="info-row"><div class="info-label">Заказчик:</div><div class="info-value">${user.name}, паспорт: серия и номер при предъявлении</div></div>
+                        <div class="info-row"><div class="info-label">Контактный телефон:</div><div class="info-value">${user.phone || 'не указан'}</div></div>
+                        <div class="info-row"><div class="info-label">Адрес электронной почты:</div><div class="info-value">${user.email}</div></div>
+                    </div>
+                    
+                    <div class="document-section">
+                        <h3>2. ПРЕДМЕТ ДОГОВОРА</h3>
+                        <p>Исполнитель обязуется предоставить Заказчику услуги по временному проживанию животного в специализированном отеле, а Заказчик обязуется оплатить эти услуги в порядке и на условиях, предусмотренных настоящим Договором.</p>
+                    </div>
+                    
+                    <div class="document-section">
+                        <h3>3. СВЕДЕНИЯ О ЖИВОТНОМ</h3>
+                        <div class="info-row"><div class="info-label">Имя питомца:</div><div class="info-value">${booking.catName}</div></div>
+                        <div class="info-row"><div class="info-label">Вес:</div><div class="info-value">${booking.weight} кг</div></div>
+                        <div class="info-row"><div class="info-label">Вид:</div><div class="info-value">Кошка домашняя (Felis catus)</div></div>
+                        <div class="info-row"><div class="info-label">Наличие прививок:</div><div class="info-value">Подтверждено ветеринарным паспортом</div></div>
+                    </div>
+                    
+                    <div class="document-section">
+                        <h3>4. УСЛОВИЯ ПРОЖИВАНИЯ</h3>
+                        <div class="info-row"><div class="info-label">Категория номера:</div><div class="info-value">${booking.roomName}</div></div>
+                        <div class="info-row"><div class="info-label">Дата заезда:</div><div class="info-value">${new Date(booking.checkIn).toLocaleDateString('ru-RU')} с 14:00</div></div>
+                        <div class="info-row"><div class="info-label">Дата выезда:</div><div class="info-value">${new Date(booking.checkOut).toLocaleDateString('ru-RU')} до 12:00</div></div>
+                        <div class="info-row"><div class="info-label">Количество ночей:</div><div class="info-value">${nights}</div></div>
+                        <div class="info-row"><div class="info-label">Стоимость одной ночи:</div><div class="info-value">${(parseInt(booking.price) / nights).toFixed(0)} ₽</div></div>
+                        <div class="info-row"><div class="info-label">Общая стоимость услуг:</div><div class="info-value"><strong style="font-size: 1.2rem;">${booking.price} ₽</strong></div></div>
+                    </div>
+                    
+                    <div class="document-section">
+                        <h3>5. ПИТАНИЕ И НАПОЛНИТЕЛЬ</h3>
+                        <div class="info-row"><div class="info-label">Корм:</div><div class="info-value"><div class="preferences-list">${foodHtml}</div></div></div>
+                        <div class="info-row"><div class="info-label">Наполнитель:</div><div class="info-value"><div class="preferences-list">${litterHtml}</div></div></div>
+                    </div>
+                    
+                    ${booking.medication ? `
+                    <div class="document-section">
+                        <h3>6. МЕДИЦИНСКИЕ НАЗНАЧЕНИЯ</h3>
+                        <div class="info-row"><div class="info-value">${booking.medication}</div></div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="document-section">
+                        <h3>7. ПРАВА И ОБЯЗАННОСТИ СТОРОН</h3>
+                        <p><strong>Исполнитель обязуется:</strong></p>
+                        <ul>
+                            <li>Обеспечить круглосуточный уход и наблюдение за животным.</li>
+                            <li>Предоставлять качественное питание согласно выбранным предпочтениям.</li>
+                            <li>Проводить ежедневную уборку номера и замену наполнителя.</li>
+                            <li>Организовывать игры и прогулки (не менее 2 часов в день).</li>
+                            <li>Предоставлять фотоотчёт в Telegram по запросу Заказчика.</li>
+                            <li>Обеспечить круглосуточную ветеринарную поддержку.</li>
+                        </ul>
+                        <p><strong>Заказчик обязуется:</strong></p>
+                        <ul>
+                            <li>Предоставить ветеринарный паспорт с отметками о прививках.</li>
+                            <li>Сообщить об особенностях поведения и здоровья животного.</li>
+                            <li>Своевременно оплатить услуги в полном объёме.</li>
+                            <li>Забрать животное в указанный срок или уведомить о продлении.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="document-section">
+                        <h3>8. ОТВЕТСТВЕННОСТЬ СТОРОН</h3>
+                        <p>Исполнитель несёт ответственность за жизнь и здоровье животного в период действия договора при условии соблюдения Заказчиком правил предоставления услуг. Заказчик несёт ответственность за достоверность предоставленной информации о животном.</p>
+                    </div>
+                    
+                    <div class="document-section">
+                        <h3>9. СРОК ДЕЙСТВИЯ ДОГОВОРА</h3>
+                        <p>Договор вступает в силу с момента подписания и действует до полного исполнения сторонами своих обязательств.</p>
+                    </div>
+                    
+                    <div class="signature-block">
+                        <div class="signature-item">
+                            <div class="signature-line"></div>
+                            <p>Подпись Заказчика</p>
+                            <p>_____________ /${user.name}/</p>
+                        </div>
+                        <div class="signature-item">
+                            <div class="signature-line"></div>
+                            <p>Подпись Исполнителя</p>
+                            <p>_____________ /Мурзиков К.С./</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stamp">
+                        ⚑ М.П. <span style="font-family: monospace;">[ПЕЧАТЬ ООО "МУРРРОТЕЛЬ"]</span>
+                    </div>
+                    
+                    <div class="document-footer">
+                        <p>Договор составлен в двух экземплярах, имеющих равную юридическую силу, по одному для каждой из Сторон.</p>
+                        <p>© 2026 МурррОтель. Все права защищены.</p>
+                        <p>Тел.: +7 (999) 123-45-67, e-mail: hello@murr-hotel.ru</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ============ ЧЕК ============
+        function generateReceipt(booking, user) {
+            const nights = Math.ceil((new Date(booking.checkOut) - new Date(booking.checkIn)) / (1000 * 60 * 60 * 24));
+            const receiptNumber = 'ЧЕК № ' + booking.id + ' от ' + new Date(booking.createdAt).toLocaleDateString('ru-RU');
+            const total = booking.price;
+            
+            return `
+                <div class="receipt-document">
+                    <div class="receipt-header">
+                        <h3>🐾 МурррОтель</h3>
+                        <p>ООО "МурррОтель"</p>
+                        <p>ИНН 7701234567 / КПП 770101001</p>
+                        <p>Кассовый чек</p>
+                    </div>
+                    <div style="text-align: center; margin-bottom: 10px;">
+                        <strong>${receiptNumber}</strong>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Услуга:</span>
+                        <span>Проживание кошки в номере "${booking.roomName}"</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Клиент:</span>
+                        <span>${user.name}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Питомец:</span>
+                        <span>${booking.catName}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Период:</span>
+                        <span>${new Date(booking.checkIn).toLocaleDateString()} — ${new Date(booking.checkOut).toLocaleDateString()}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Количество ночей:</span>
+                        <span>${nights}</span>
+                    </div>
+                    <div class="receipt-row receipt-total">
+                        <span>ИТОГО К ОПЛАТЕ:</span>
+                        <span><strong>${total} ₽</strong></span>
+                    </div>
+                    <div class="receipt-row">
+                        <span>В том числе НДС:</span>
+                        <span>Без НДС</span>
+                    </div>
+                    <div class="receipt-footer">
+                        <p>Оплата принята. Спасибо за доверие!</p>
+                        <p>Кассир: Администратор</p>
+                        <p>${new Date().toLocaleString()}</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ============ ПЕЧАТЬ ============
+        window.printContract = async function(bookingId) {
+            const user = await getCurrentUser();
+            if (!user) { showToast('Войдите в аккаунт', true); return; }
+            await openDB();
+            const tx = db.transaction('bookings', 'readonly');
+            const booking = await new Promise(resolve => {
+                const req = tx.objectStore('bookings').get(bookingId);
+                req.onsuccess = () => resolve(req.result);
+            });
+            if (!booking) { showToast('Бронирование не найдено', true); return; }
+            
+            const userTx = db.transaction('users', 'readonly');
+            const fullUser = await new Promise(resolve => {
+                const req = userTx.objectStore('users').get(user.email);
+                req.onsuccess = () => resolve(req.result);
+            });
+            
+            const printContainer = document.getElementById('printContainer');
+            printContainer.style.display = 'block';
+            printContainer.innerHTML = generateContract(booking, fullUser);
+            window.print();
+            setTimeout(() => {
+                printContainer.innerHTML = '';
+                printContainer.style.display = 'none';
+            }, 500);
+        };
+        
+        window.printReceipt = async function(bookingId) {
+            const user = await getCurrentUser();
+            if (!user) { showToast('Войдите в аккаунт', true); return; }
+            await openDB();
+            const tx = db.transaction('bookings', 'readonly');
+            const booking = await new Promise(resolve => {
+                const req = tx.objectStore('bookings').get(bookingId);
+                req.onsuccess = () => resolve(req.result);
+            });
+            if (!booking) { showToast('Бронирование не найдено', true); return; }
+            
+            const userTx = db.transaction('users', 'readonly');
+            const fullUser = await new Promise(resolve => {
+                const req = userTx.objectStore('users').get(user.email);
+                req.onsuccess = () => resolve(req.result);
+            });
+            
+            const printContainer = document.getElementById('printContainer');
+            printContainer.style.display = 'block';
+            printContainer.innerHTML = generateReceipt(booking, fullUser);
+            window.print();
+            setTimeout(() => {
+                printContainer.innerHTML = '';
+                printContainer.style.display = 'none';
+            }, 500);
+        };
+        
+        // ============ ОСТАЛЬНЫЕ ФУНКЦИИ (БЕЗ ИЗМЕНЕНИЙ) ============
+        async function loadProfile() {
+            const user = await getCurrentUser();
+            const unauthorizedDiv = document.getElementById('unauthorizedMessage');
+            const profileContent = document.getElementById('profileContent');
+            if (!user) {
+                unauthorizedDiv.style.display = 'block';
+                profileContent.style.display = 'none';
+                return;
+            }
+            unauthorizedDiv.style.display = 'none';
+            profileContent.style.display = 'block';
+            
+            document.getElementById('userName').innerText = user.name;
+            document.getElementById('userEmail').innerText = user.email;
+            document.getElementById('userPhone').innerText = user.phone || 'не указан';
+            document.getElementById('userRegDate').innerText = new Date().toLocaleDateString('ru-RU');
+            
+            let roleText = '';
+            if (user.role === 'admin') roleText = '👑 Администратор';
+            else if (user.role === 'manager') roleText = '📋 Менеджер';
+            else roleText = '🐱 Пользователь';
+            document.getElementById('userRoleBadge').innerText = roleText;
+            
+            const myBookings = await getMyBookings();
+            const myContainer = document.getElementById('myBookingsList');
+            if (myBookings.length === 0) {
+                myContainer.innerHTML = '<p>😿 У вас пока нет бронирований. <a href="booking.html">Забронировать номер?</a></p>';
+            } else {
+                myContainer.innerHTML = myBookings.map(b => {
+                    let foodText = (b.foodPreferences && b.foodPreferences.length > 0) ? b.foodPreferences.join(', ') : 'Стандартный корм';
+                    let litterText = (b.litterPreferences && b.litterPreferences.length > 0) ? b.litterPreferences.join(', ') : 'Стандартный наполнитель';
+                    return `
+                        <div class="booking-item">
+                            <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                                <div>
+                                    <strong>🏠 ${b.roomName}</strong><br>
+                                    🐱 ${b.catName}<br>
+                                    📅 ${new Date(b.checkIn).toLocaleDateString()} → ${new Date(b.checkOut).toLocaleDateString()}<br>
+                                    💰 ${b.price} ₽<br>
+                                    🍽️ ${foodText}<br>
+                                    🪣 ${litterText}
+                                    ${b.medication ? `<br>💊 Лекарства: ${b.medication.substring(0, 50)}` : ''}
+                                </div>
+                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                    <button onclick="printContract(${b.id})" class="btn-icon" style="background: #2c1810;">🖨️ Договор</button>
+                                    <button onclick="printReceipt(${b.id})" class="btn-icon" style="background: #2c1810;">🧾 Чек</button>
+                                    <button onclick="cancelMyBooking(${b.id})" class="btn-icon btn-danger">❌ Отменить</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            const adminPanel = document.getElementById('adminPanel');
+            const managerPanel = document.getElementById('managerPanel');
+            if (user.role === 'admin') {
+                adminPanel.style.display = 'block';
+                managerPanel.style.display = 'none';
+                await loadAllBookingsForAdmin();
+                await loadAllReviewsForAdmin();
+            } else if (user.role === 'manager') {
+                adminPanel.style.display = 'none';
+                managerPanel.style.display = 'block';
+                await loadAllBookingsForManager();
+                await loadAllReviewsForManager();
+            } else {
+                adminPanel.style.display = 'none';
+                managerPanel.style.display = 'none';
+            }
+        }
+        
+        async function loadAllBookingsForAdmin() {
+            const bookings = await getAllBookings();
+            const container = document.getElementById('allBookingsList');
+            if (bookings.length === 0) container.innerHTML = '<p>Нет бронирований</p>';
+            else {
+                container.innerHTML = bookings.map(b => `
+                    <div class="booking-item">
+                        <strong>${b.userName}</strong> (${b.userEmail})<br>
+                        Номер: ${b.roomName}, Кошка: ${b.catName}<br>
+                        ${new Date(b.checkIn).toLocaleDateString()} → ${new Date(b.checkOut).toLocaleDateString()}<br>
+                        💰 ${b.price} ₽
+                        <div><button onclick="deleteBookingByAdmin(${b.id})" class="btn-icon btn-danger">🗑️ Удалить</button></div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        async function loadAllReviewsForAdmin() {
+            const reviews = await getAllReviews();
+            const container = document.getElementById('allReviewsList');
+            if (reviews.length === 0) container.innerHTML = '<p>Нет отзывов</p>';
+            else {
+                container.innerHTML = reviews.map(r => `
+                    <div class="review-item">
+                        <strong>${r.userName}</strong> (${r.userEmail})<br>
+                        Оценка: ${'⭐'.repeat(r.rating)}<br>
+                        ${r.comment}<br>
+                        <button onclick="deleteReviewByAdmin(${r.id})" class="btn-icon btn-danger">🗑️ Удалить отзыв</button>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        async function loadAllBookingsForManager() {
+            const bookings = await getAllBookings();
+            const container = document.getElementById('managerBookingsList');
+            container.innerHTML = bookings.map(b => `
+                <div class="booking-item">
+                    <strong>${b.userName}</strong> (${b.userEmail})<br>
+                    ${b.roomName}, ${b.catName}<br>
+                    ${new Date(b.checkIn).toLocaleDateString()} → ${new Date(b.checkOut).toLocaleDateString()}<br>
+                    💰 ${b.price} ₽
+                    <div><button onclick="deleteBookingByManager(${b.id})" class="btn-icon btn-danger">🗑️ Удалить</button></div>
+                </div>
+            `).join('');
+        }
+        
+        async function loadAllReviewsForManager() {
+            const reviews = await getAllReviews();
+            const container = document.getElementById('managerReviewsList');
+            container.innerHTML = reviews.map(r => `
+                <div class="review-item">
+                    <strong>${r.userName}</strong> (${r.userEmail})<br>
+                    ${'⭐'.repeat(r.rating)}<br>
+                    ${r.comment}
+                    <div><button onclick="deleteReviewByManager(${r.id})" class="btn-icon btn-danger">🗑️ Удалить отзыв</button></div>
+                </div>
+            `).join('');
+        }
+        
+        window.cancelMyBooking = async (id) => {
+            if (confirm('Отменить бронирование?')) {
+                await deleteBooking(id);
+                showToast('Бронирование отменено');
+                loadProfile();
+            }
+        };
+        window.deleteBookingByAdmin = async (id) => {
+            if (confirm('Удалить бронирование?')) {
+                await deleteBooking(id);
+                loadProfile();
+            }
+        };
+        window.deleteBookingByManager = window.deleteBookingByAdmin;
+        window.deleteReviewByAdmin = async (id) => {
+            if (confirm('Удалить отзыв?')) {
+                await deleteReview(id);
+                loadProfile();
+            }
+        };
+        window.deleteReviewByManager = window.deleteReviewByAdmin;
+        
+        function enableEdit() {
+            document.getElementById('editForm').style.display = 'block';
+            document.getElementById('editProfileBtn').style.display = 'none';
+            document.getElementById('editName').value = document.getElementById('userName').innerText;
+            document.getElementById('editPhone').value = document.getElementById('userPhone').innerText === 'не указан' ? '' : document.getElementById('userPhone').innerText;
+        }
+        
+        function cancelEdit() {
+            document.getElementById('editForm').style.display = 'none';
+            document.getElementById('editProfileBtn').style.display = 'inline-block';
+        }
+        
+        async function saveProfileChanges() {
+            const name = document.getElementById('editName').value;
+            const phone = document.getElementById('editPhone').value;
+            await updateProfile(name, phone);
+            showToast('Профиль обновлён!');
+            cancelEdit();
+            loadProfile();
+        }
+        
+        window.enableEdit = enableEdit;
+        window.cancelEdit = cancelEdit;
+        window.saveProfileChanges = saveProfileChanges;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfile();
+        });
+    </script>
+    <script src="cat-chatbot.js"></script>
+</body>
+</html>

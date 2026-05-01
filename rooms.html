@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Номера — МурррОтель</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .room-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: 0.3s;
+        }
+        .room-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            background: #f0e6d8;
+        }
+        .carousel-inner {
+            display: flex;
+            transition: transform 0.5s ease;
+            height: 100%;
+        }
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.3s;
+            z-index: 10;
+        }
+        .carousel-btn:hover {
+            background: rgba(0,0,0,0.8);
+        }
+        .carousel-btn.prev {
+            left: 10px;
+        }
+        .carousel-btn.next {
+            right: 10px;
+        }
+        .carousel-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        .carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+        }
+        .carousel-dot.active {
+            background: #ffb347;
+        }
+        .room-content {
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .room-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .room-title {
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+        }
+        .room-desc {
+            color: #666;
+            margin: 0.5rem 0;
+        }
+        .room-price {
+            font-size: 1.8rem;
+            color: #ff8c33;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        .btn-book {
+            background: #2c1810;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-book:hover {
+            background: #ffb347;
+            color: #2c1810;
+            transform: translateY(-3px);
+        }
+        @media (max-width: 768px) {
+            .carousel { height: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">🐾 Муррр<span>Отель</span></a>
+            <div class="burger"><div></div><div></div><div></div></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="rooms.html">Номера</a></li>
+                <li><a href="booking.html">Бронирование</a></li>
+                <li><a href="reviews.html">Отзывы</a></li>
+                <li><a href="profile.html">Профиль</a></li>
+            </ul>
+            <div class="auth-buttons" id="authContainer"></div>
+        </div>
+    </header>
+
+    <main>
+        <h1>🐱 Наши номера для кошек</h1>
+        <div class="card-grid" id="roomsGrid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));"></div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div><h4>🐾 МурррОтель</h4><p>Отель для кошек с любовью</p></div>
+            <div><h4>Контакты</h4><p>📞 +7 (999) 123-45-67</p><p>✉️ hello@murr-hotel.ru</p></div>
+            <div><h4>Адрес</h4><p>📍 Республика Калмыкия,<br>г. Элиста, ул. Кошачья, д. 15</p></div>
+            <div><h4>Режим работы</h4><p>Круглосуточно</p></div>
+        </div>
+        <div class="copyright">© 2026 МурррОтель. Все права защищены.</div>
+    </footer>
+
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+            <h2 id="modalTitle">Вход</h2>
+            <div id="modalLoginForm">
+                <div class="form-group"><input type="email" id="modalLoginEmail" placeholder="Email"></div>
+                <div class="form-group"><input type="password" id="modalLoginPassword" placeholder="Пароль"></div>
+                <button class="btn-primary" onclick="doModalLogin()">Войти</button>
+                <p style="margin-top:1rem;">Нет аккаунта? <a href="#" onclick="openAuthModal('register')">Регистрация</a></p>
+            </div>
+            <div id="modalRegisterForm" style="display:none;">
+                <div class="form-group"><input type="text" id="modalRegName" placeholder="Ваше имя"></div>
+                <div class="form-group"><input type="email" id="modalRegEmail" placeholder="Email"></div>
+                <div class="form-group"><input type="tel" id="modalRegPhone" placeholder="Телефон"></div>
+                <div class="form-group"><input type="password" id="modalRegPassword" placeholder="Пароль"></div>
+                <button class="btn-primary" onclick="doModalRegister()">Зарегистрироваться</button>
+                <p style="margin-top:1rem;"><a href="#" onclick="openAuthModal('login')">Уже есть аккаунт? Войти</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const rooms = [
+            { 
+                name: "Стандарт", 
+                price: 1200, 
+                desc: "Уютный номер для одной кошки. Всё необходимое для комфортного проживания.", 
+                icon: "😺",
+                images: [
+                    "https://avatars.mds.yandex.net/get-altay/1483503/2a0000016847c82b1877bad9277856eee417/orig",
+                    "https://static.tildacdn.com/tild3336-3134-4337-b430-336666396263/IMG_20230704_185408-.jpeg",
+                    "https://avatars.mds.yandex.net/get-altay/1439437/2a00000168530a67d82768cc86a706ef2677/XXL_height"
+                ]
+            },
+            { 
+                name: "Люкс", 
+                price: 2500, 
+                desc: "Просторный номер с веб-камерой. Смотрите за питомцем онлайн 24/7.", 
+                icon: "🐱",
+                images: [
+                    "https://avatars.mds.yandex.net/get-altay/1001354/2a0000016287df264852868cc54ea7bb9ecf/XXL",
+                    "https://avatars.mds.yandex.net/get-altay/1775373/2a0000016b23d9e3093ae8bf3ef2a880b6dd/XXL_height",
+                    "https://cdn-st2.vigbo.com/u41876/54516/blog/4918818/4058776/52041106/1000-1bab43294dfb528967402a7b83ff1f18.jpg"
+                ]
+            },
+            { 
+                name: "VIP Вилла", 
+                price: 4000, 
+                desc: "Отдельная комната + когтеточка + трансляция. Королевские условия!", 
+                icon: "👑",
+                images: [
+                    "https://i.pinimg.com/736x/5c/68/fd/5c68fdafb2a6f047af844c5db4a2d4c0.jpg",
+                    "https://sc03.alicdn.com/kf/H0bb0c40ef2f040399bf0d7a39cff3abbR.jpg",
+                    "https://i.pinimg.com/736x/55/38/ac/5538acfb1c86e5cd11692f43dd07167d.jpg"
+                ]
+            }
+        ];
+        
+        class Carousel {
+            constructor(container, images, roomName) {
+                this.container = container;
+                this.images = images;
+                this.currentIndex = 0;
+                this.roomName = roomName;
+                this.init();
+            }
+            
+            init() {
+                this.container.innerHTML = `
+                    <div class="carousel">
+                        <button class="carousel-btn prev" data-action="prev">❮</button>
+                        <div class="carousel-inner"></div>
+                        <button class="carousel-btn next" data-action="next">❯</button>
+                        <div class="carousel-dots"></div>
+                    </div>
+                `;
+                
+                const inner = this.container.querySelector('.carousel-inner');
+                const dotsContainer = this.container.querySelector('.carousel-dots');
+                
+                this.images.forEach((img, idx) => {
+                    const slide = document.createElement('img');
+                    slide.className = 'carousel-slide';
+                    slide.src = img;
+                    slide.alt = `${this.roomName} фото ${idx + 1}`;
+                    inner.appendChild(slide);
+                    
+                    const dot = document.createElement('div');
+                    dot.className = 'carousel-dot' + (idx === 0 ? ' active' : '');
+                    dot.addEventListener('click', () => this.goTo(idx));
+                    dotsContainer.appendChild(dot);
+                });
+                
+                const prevBtn = this.container.querySelector('[data-action="prev"]');
+                const nextBtn = this.container.querySelector('[data-action="next"]');
+                
+                prevBtn.addEventListener('click', () => this.prev());
+                nextBtn.addEventListener('click', () => this.next());
+                
+                this.update();
+            }
+            
+            update() {
+                const inner = this.container.querySelector('.carousel-inner');
+                const dots = this.container.querySelectorAll('.carousel-dot');
+                if (inner) {
+                    inner.style.transform = `translateX(-${this.currentIndex * 100}%)`;
+                }
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === this.currentIndex);
+                });
+            }
+            
+            prev() {
+                this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+                this.update();
+            }
+            
+            next() {
+                this.currentIndex = (this.currentIndex + 1) % this.images.length;
+                this.update();
+            }
+            
+            goTo(index) {
+                this.currentIndex = index;
+                this.update();
+            }
+        }
+        
+        function renderRooms() {
+            const grid = document.getElementById('roomsGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            
+            rooms.forEach((room, idx) => {
+                const card = document.createElement('div');
+                card.className = 'room-card';
+                
+                const carouselContainer = document.createElement('div');
+                card.appendChild(carouselContainer);
+                
+                const content = document.createElement('div');
+                content.className = 'room-content';
+                content.innerHTML = `
+                    <div class="room-icon">${room.icon}</div>
+                    <h3 class="room-title">${room.name}</h3>
+                    <p class="room-desc">${room.desc}</p>
+                    <div class="room-price">${room.price}₽/ночь</div>
+                    <a href="booking.html?room=${encodeURIComponent(room.name)}" class="btn-book">Забронировать</a>
+                `;
+                card.appendChild(content);
+                grid.appendChild(card);
+                
+                new Carousel(carouselContainer, room.images, room.name);
+            });
+        }
+        
+        renderRooms();
+    </script>
+    <script src="cat-chatbot.js"></script>
+</body>
+</html>

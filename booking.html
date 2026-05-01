@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронирование — МурррОтель</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .options-group {
+            background: #fef7e8;
+            border-radius: 20px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 2px solid #ffe0b5;
+        }
+        .options-title {
+            font-weight: bold;
+            margin-bottom: 0.8rem;
+            color: #2c1810;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.8rem;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 12px;
+            transition: 0.3s;
+            cursor: pointer;
+            border: 1px solid #ffe0b5;
+        }
+        .option-item:hover {
+            background: #ffe0b5;
+        }
+        .option-item input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #ffb347;
+            margin: 0;
+        }
+        .option-item label {
+            cursor: pointer;
+            margin: 0;
+            flex: 1;
+        }
+        .other-input-group {
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px dashed #ffe0b5;
+            display: none;
+        }
+        .other-input-group.show {
+            display: block;
+        }
+        .other-input-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 12px;
+            border: 2px solid #ffe0b5;
+        }
+        .selected-count {
+            font-size: 0.8rem;
+            color: #ff8c33;
+            background: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">🐾 Муррр<span>Отель</span></a>
+            <div class="burger"><div></div><div></div><div></div></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="rooms.html">Номера</a></li>
+                <li><a href="booking.html">Бронирование</a></li>
+                <li><a href="reviews.html">Отзывы</a></li>
+                <li><a href="profile.html">Профиль</a></li>
+            </ul>
+            <div class="auth-buttons" id="authContainer"></div>
+        </div>
+    </header>
+
+    <main>
+        <h1>🐾 Забронировать номер для кошки</h1>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+            <div style="background: white; border-radius: 32px; padding: 2rem;">
+                <h2>📝 Детали бронирования</h2>
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label>🏠 Выберите номер</label>
+                        <select id="roomSelect" required>
+                            <option value="Стандарт">😺 Стандарт — 1200₽/ночь</option>
+                            <option value="Люкс">🐱 Люкс с веб-камерой — 2500₽/ночь</option>
+                            <option value="VIP Вилла">👑 VIP Вилла — 4000₽/ночь</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>🐱 Имя вашей кошки</label>
+                        <input type="text" id="catName" placeholder="Например: Мурка, Барсик" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📅 Дата заезда</label>
+                        <input type="date" id="checkIn" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📅 Дата выезда</label>
+                        <input type="date" id="checkOut" required>
+                    </div>
+                    <div class="form-group">
+                        <label>⚖️ Вес кошки (кг)</label>
+                        <input type="number" id="weight" step="0.1" placeholder="Например: 4.5" required>
+                    </div>
+                    
+                    <div class="options-group">
+                        <div class="options-title">🍽️ Предпочтения по корму <span class="selected-count" id="foodSelectedCount">(не выбрано)</span></div>
+                        <div class="options-grid" id="foodOptions"></div>
+                        <div class="other-input-group" id="foodOtherGroup">
+                            <input type="text" id="foodOther" placeholder="Укажите другой корм...">
+                        </div>
+                    </div>
+                    
+                    <div class="options-group">
+                        <div class="options-title">🪣 Предпочтения по наполнителю <span class="selected-count" id="litterSelectedCount">(не выбрано)</span></div>
+                        <div class="options-grid" id="litterOptions"></div>
+                        <div class="other-input-group" id="litterOtherGroup">
+                            <input type="text" id="litterOther" placeholder="Укажите другой наполнитель...">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>💊 Нужны ли лекарства?</label>
+                        <textarea id="medication" rows="2" placeholder="Укажите лекарства и график приёма"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;">✅ Забронировать</button>
+                </form>
+            </div>
+
+            <div>
+                <div style="background: linear-gradient(135deg, #ffe0b5, #ffcc88); border-radius: 32px; padding: 2rem; margin-bottom: 1.5rem;">
+                    <h2>💰 Калькулятор стоимости</h2>
+                    <p id="priceDisplay" style="font-size: 1.8rem; font-weight: bold; margin: 1rem 0;">0 ₽</p>
+                    <p>В стоимость входит: питание, уборка, игры, круглосуточный уход</p>
+                </div>
+                <div style="background: white; border-radius: 32px; padding: 2rem;">
+                    <h2>✨ Наши услуги</h2>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 0.5rem 0;">🐾 ✅ Ежедневные игры с кошками</li>
+                        <li style="padding: 0.5rem 0;">🐾 ✅ Специальное питание по запросу</li>
+                        <li style="padding: 0.5rem 0;">🐾 ✅ Видеонаблюдение в VIP-номерах</li>
+                        <li style="padding: 0.5rem 0;">🐾 ✅ Фотоотчёты в Telegram</li>
+                        <li style="padding: 0.5rem 0;">🐾 ✅ Ветеринар на связи 24/7</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div><h4>🐾 МурррОтель</h4><p>Отель для кошек с любовью</p></div>
+            <div><h4>Контакты</h4><p>📞 +7 (999) 123-45-67</p><p>✉️ hello@murr-hotel.ru</p></div>
+            <div><h4>Адрес</h4><p>📍 Республика Калмыкия,<br>г. Элиста, ул. Кошачья, д. 15</p></div>
+            <div><h4>Режим работы</h4><p>Круглосуточно</p></div>
+        </div>
+        <div class="copyright">© 2026 МурррОтель. Все права защищены.</div>
+    </footer> 
+    
+    <div id="authModal" class="modal">...</div>
+
+    <script src="script.js"></script>
+    <script>
+        const roomPrices = { 'Стандарт': 1200, 'Люкс': 2500, 'VIP Вилла': 4000 };
+        
+        const foodList = [
+            "Royal Canin", "Hill's Science Plan", "Purina Pro Plan", "Acana", "Orijen", "Monge", "Brit Care", "Farmina N&D", "Grandorf"
+        ];
+        
+        const litterList = [
+            "Древесный комкующий", "Силикагелевый", "Кукурузный", "Бентонитовый", "Целлюлозный", "Соевый", "Зерновой", "Минеральный", "Бумажный"
+        ];
+        
+        function renderFoodOptions() {
+            const container = document.getElementById('foodOptions');
+            container.innerHTML = foodList.map((food, i) => `
+                <div class="option-item" onclick="document.getElementById('food_${i}').click()">
+                    <input type="checkbox" id="food_${i}" value="${food}" onchange="updateFoodSelection()">
+                    <label>${food}</label>
+                </div>
+            `).join('');
+            container.innerHTML += `
+                <div class="option-item" onclick="document.getElementById('food_other_cb').click()">
+                    <input type="checkbox" id="food_other_cb" value="Другой" onchange="toggleFoodOther()">
+                    <label>📝 Другой корм</label>
+                </div>
+            `;
+        }
+        
+        function renderLitterOptions() {
+            const container = document.getElementById('litterOptions');
+            container.innerHTML = litterList.map((litter, i) => `
+                <div class="option-item" onclick="document.getElementById('litter_${i}').click()">
+                    <input type="checkbox" id="litter_${i}" value="${litter}" onchange="updateLitterSelection()">
+                    <label>${litter}</label>
+                </div>
+            `).join('');
+            container.innerHTML += `
+                <div class="option-item" onclick="document.getElementById('litter_other_cb').click()">
+                    <input type="checkbox" id="litter_other_cb" value="Другой" onchange="toggleLitterOther()">
+                    <label>📝 Другой наполнитель</label>
+                </div>
+            `;
+        }
+        
+        function toggleFoodOther() {
+            const cb = document.getElementById('food_other_cb');
+            const group = document.getElementById('foodOtherGroup');
+            if (cb.checked) {
+                group.classList.add('show');
+            } else {
+                group.classList.remove('show');
+                document.getElementById('foodOther').value = '';
+            }
+            updateFoodSelection();
+        }
+        
+        function toggleLitterOther() {
+            const cb = document.getElementById('litter_other_cb');
+            const group = document.getElementById('litterOtherGroup');
+            if (cb.checked) {
+                group.classList.add('show');
+            } else {
+                group.classList.remove('show');
+                document.getElementById('litterOther').value = '';
+            }
+            updateLitterSelection();
+        }
+        
+        function updateFoodSelection() {
+            let count = 0;
+            for (let i = 0; i < foodList.length; i++) {
+                if (document.getElementById(`food_${i}`)?.checked) count++;
+            }
+            if (document.getElementById('food_other_cb')?.checked) count++;
+            document.getElementById('foodSelectedCount').textContent = count > 0 ? `(выбрано: ${count})` : '(не выбрано)';
+        }
+        
+        function updateLitterSelection() {
+            let count = 0;
+            for (let i = 0; i < litterList.length; i++) {
+                if (document.getElementById(`litter_${i}`)?.checked) count++;
+            }
+            if (document.getElementById('litter_other_cb')?.checked) count++;
+            document.getElementById('litterSelectedCount').textContent = count > 0 ? `(выбрано: ${count})` : '(не выбрано)';
+        }
+        
+        function getSelectedFoods() {
+            const selected = [];
+            for (let i = 0; i < foodList.length; i++) {
+                if (document.getElementById(`food_${i}`)?.checked) {
+                    selected.push(foodList[i]);
+                }
+            }
+            if (document.getElementById('food_other_cb')?.checked) {
+                const other = document.getElementById('foodOther').value;
+                selected.push(other ? `Другой: ${other}` : 'Другой корм');
+            }
+            return selected;
+        }
+        
+        function getSelectedLitters() {
+            const selected = [];
+            for (let i = 0; i < litterList.length; i++) {
+                if (document.getElementById(`litter_${i}`)?.checked) {
+                    selected.push(litterList[i]);
+                }
+            }
+            if (document.getElementById('litter_other_cb')?.checked) {
+                const other = document.getElementById('litterOther').value;
+                selected.push(other ? `Другой: ${other}` : 'Другой наполнитель');
+            }
+            return selected;
+        }
+        
+        function calculatePrice() {
+            const room = document.getElementById('roomSelect').value;
+            const checkIn = document.getElementById('checkIn').value;
+            const checkOut = document.getElementById('checkOut').value;
+            if (checkIn && checkOut && new Date(checkOut) > new Date(checkIn)) {
+                const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
+                const total = nights * roomPrices[room];
+                document.getElementById('priceDisplay').innerHTML = `${total} ₽ <span style="font-size:1rem;">за ${nights} ночь(ей)</span>`;
+            } else {
+                document.getElementById('priceDisplay').innerHTML = '0 ₽';
+            }
+        }
+        
+        document.getElementById('roomSelect').addEventListener('change', calculatePrice);
+        document.getElementById('checkIn').addEventListener('change', calculatePrice);
+        document.getElementById('checkOut').addEventListener('change', calculatePrice);
+        
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = await getCurrentUser();
+            if (!user) {
+                showToast('Войдите в аккаунт', true);
+                openAuthModal('login');
+                return;
+            }
+            
+            const selectedFoods = getSelectedFoods();
+            const selectedLitters = getSelectedLitters();
+            
+            if (selectedFoods.length === 0) {
+                showToast('Выберите корм для кошки', true);
+                return;
+            }
+            if (selectedLitters.length === 0) {
+                showToast('Выберите наполнитель', true);
+                return;
+            }
+            
+            const checkIn = document.getElementById('checkIn').value;
+            const checkOut = document.getElementById('checkOut').value;
+            if (new Date(checkIn) >= new Date(checkOut)) {
+                showToast('Дата выезда позже даты заезда', true);
+                return;
+            }
+            
+            const booking = {
+                roomName: document.getElementById('roomSelect').value,
+                catName: document.getElementById('catName').value,
+                checkIn: checkIn,
+                checkOut: checkOut,
+                weight: parseFloat(document.getElementById('weight').value),
+                foodPreferences: selectedFoods,
+                litterPreferences: selectedLitters,
+                medication: document.getElementById('medication').value,
+                price: document.getElementById('priceDisplay').innerText.split('₽')[0]
+            };
+            
+            try {
+                await saveBooking(booking);
+                showToast('✅ Бронирование создано!');
+                document.getElementById('bookingForm').reset();
+                calculatePrice();
+            } catch(err) {
+                showToast('Ошибка: ' + err.message, true);
+            }
+        });
+        
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('checkIn').min = today;
+        document.getElementById('checkOut').min = today;
+        
+        renderFoodOptions();
+        renderLitterOptions();
+        updateFoodSelection();
+        updateLitterSelection();
+        
+        document.getElementById('foodOther')?.addEventListener('input', updateFoodSelection);
+        document.getElementById('litterOther')?.addEventListener('input', updateLitterSelection);
+        
+        window.toggleFoodOther = toggleFoodOther;
+        window.toggleLitterOther = toggleLitterOther;
+        window.updateFoodSelection = updateFoodSelection;
+        window.updateLitterSelection = updateLitterSelection;
+    </script>
+    <script src="cat-chatbot.js"></script>
+</body>
+</html>

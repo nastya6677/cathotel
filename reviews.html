@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отзывы — МурррОтель</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .review-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: 0.3s;
+        }
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .review-stars {
+            font-size: 1.3rem;
+            color: #ffb347;
+        }
+        .review-author {
+            font-weight: bold;
+            color: #2c1810;
+        }
+        .review-date {
+            color: #8b7355;
+            font-size: 0.8rem;
+        }
+        .review-comment {
+            line-height: 1.5;
+            margin-top: 0.8rem;
+            color: #333;
+        }
+        .delete-review-btn {
+            background: #c0392b;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 0.8rem;
+        }
+        .delete-review-btn:hover {
+            background: #a93226;
+        }
+        .warning-box {
+            background: #ffe0b5;
+            padding: 1rem;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">🐾 Муррр<span>Отель</span></a>
+            <div class="burger"><div></div><div></div><div></div></div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="rooms.html">Номера</a></li>
+                <li><a href="booking.html">Бронирование</a></li>
+                <li><a href="reviews.html">Отзывы</a></li>
+                <li><a href="profile.html">Профиль</a></li>
+            </ul>
+            <div class="auth-buttons" id="authContainer"></div>
+        </div>
+    </header>
+
+    <main>
+        <h1>⭐ Отзывы наших клиентов</h1>
+        
+        <div style="background: white; border-radius: 32px; padding: 2rem; margin: 2rem 0;" id="reviewFormSection">
+            <h2>📝 Оставить отзыв</h2>
+            <div id="reviewAuthWarning" class="warning-box" style="display: none;">
+                🔐 Чтобы оставить отзыв, пожалуйста, <a href="#" onclick="openAuthModal('login')">войдите в аккаунт</a>
+            </div>
+            <div class="form-group">
+                <label>⭐ Оценка</label>
+                <select id="ratingSelect" style="width: auto;">
+                    <option value="5">★★★★★ (Отлично)</option>
+                    <option value="4">★★★★☆ (Хорошо)</option>
+                    <option value="3">★★★☆☆ (Средне)</option>
+                    <option value="2">★★☆☆☆ (Плохо)</option>
+                    <option value="1">★☆☆☆☆ (Ужасно)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>💬 Ваш отзыв</label>
+                <textarea id="reviewComment" rows="4" placeholder="Расскажите о вашем опыте пребывания кошки в нашем отеле..."></textarea>
+            </div>
+            <button id="submitReviewBtn" class="btn-primary">📨 Отправить отзыв</button>
+        </div>
+
+        <h2>🗣️ Что говорят наши гости</h2>
+        <div id="reviewsList"></div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div><h4>🐾 МурррОтель</h4><p>Отель для кошек с любовью</p></div>
+            <div><h4>Контакты</h4><p>📞 +7 (999) 123-45-67</p><p>✉️ hello@murr-hotel.ru</p></div>
+            <div><h4>Адрес</h4><p>📍 Республика Калмыкия,<br>г. Элиста, ул. Кошачья, д. 15</p></div>
+            <div><h4>Режим работы</h4><p>Круглосуточно</p></div>
+        </div>
+        <div class="copyright">© 2026 МурррОтель. Все права защищены.</div>
+    </footer>
+
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+            <h2 id="modalTitle">Вход</h2>
+            <div id="modalLoginForm">
+                <div class="form-group"><input type="email" id="modalLoginEmail" placeholder="Email"></div>
+                <div class="form-group"><input type="password" id="modalLoginPassword" placeholder="Пароль"></div>
+                <button class="btn-primary" onclick="doModalLogin()">Войти</button>
+                <p style="margin-top:1rem;">Нет аккаунта? <a href="#" onclick="openAuthModal('register')">Регистрация</a></p>
+            </div>
+            <div id="modalRegisterForm" style="display:none;">
+                <div class="form-group"><input type="text" id="modalRegName" placeholder="Ваше имя"></div>
+                <div class="form-group"><input type="email" id="modalRegEmail" placeholder="Email"></div>
+                <div class="form-group"><input type="tel" id="modalRegPhone" placeholder="Телефон"></div>
+                <div class="form-group"><input type="password" id="modalRegPassword" placeholder="Пароль"></div>
+                <button class="btn-primary" onclick="doModalRegister()">Зарегистрироваться</button>
+                <p style="margin-top:1rem;"><a href="#" onclick="openAuthModal('login')">Уже есть аккаунт? Войти</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        async function loadReviews() {
+            console.log('Загрузка отзывов...');
+            const reviews = await getAllReviews();
+            console.log('Отзывы:', reviews);
+            const user = await getCurrentUser();
+            const container = document.getElementById('reviewsList');
+            if (!container) return;
+            if (reviews.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding: 3rem;">😿 Пока нет отзывов. Будьте первыми!</div>';
+                return;
+            }
+            container.innerHTML = reviews.map(r => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="review-stars">${'⭐'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+                        <div class="review-date">${new Date(r.date).toLocaleDateString('ru-RU')}</div>
+                    </div>
+                    <div class="review-author">🐱 ${escapeHtml(r.userName)}</div>
+                    <div class="review-comment">${escapeHtml(r.comment)}</div>
+                    ${(user && (user.role === 'admin' || user.role === 'manager' || user.email === r.userEmail)) ? 
+                        `<button class="delete-review-btn" onclick="deleteReviewById(${r.id})">🗑️ Удалить отзыв</button>` : ''}
+                </div>
+            `).join('');
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+        
+        window.deleteReviewById = async (id) => {
+            if (confirm('Удалить этот отзыв?')) {
+                await deleteReview(id);
+                showToast('Отзыв удалён');
+                loadReviews();
+            }
+        };
+        
+        const submitBtn = document.getElementById('submitReviewBtn');
+        if (submitBtn) {
+            submitBtn.addEventListener('click', async () => {
+                const user = await getCurrentUser();
+                if (!user) {
+                    showToast('Войдите в аккаунт', true);
+                    openAuthModal('login');
+                    return;
+                }
+                const rating = document.getElementById('ratingSelect').value;
+                const comment = document.getElementById('reviewComment').value.trim();
+                if (!comment) {
+                    showToast('Напишите отзыв', true);
+                    return;
+                }
+                try {
+                    await addReview(rating, comment);
+                    showToast('Спасибо за отзыв!');
+                    document.getElementById('reviewComment').value = '';
+                    loadReviews();
+                } catch(e) {
+                    showToast('Ошибка: ' + e.message, true);
+                }
+            });
+        }
+        
+        async function checkAuth() {
+            const user = await getCurrentUser();
+            const warning = document.getElementById('reviewAuthWarning');
+            const btn = document.getElementById('submitReviewBtn');
+            const select = document.getElementById('ratingSelect');
+            const textarea = document.getElementById('reviewComment');
+            if (!user) {
+                if (warning) warning.style.display = 'block';
+                if (btn) btn.disabled = true;
+                if (select) select.disabled = true;
+                if (textarea) textarea.disabled = true;
+            } else {
+                if (warning) warning.style.display = 'none';
+                if (btn) btn.disabled = false;
+                if (select) select.disabled = false;
+                if (textarea) textarea.disabled = false;
+            }
+        }
+        
+        checkAuth();
+        loadReviews();
+    </script>
+    <script src="cat-chatbot.js"></script>
+</body>
+</html>
